@@ -1,0 +1,225 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_extras %}
+
+{% block extrahead %}
+<style>
+  :root {
+    --primary-blue: #1976D2;
+    --primary-blue-dark: #1565C0;
+    --accent-blue: #2196F3;
+    --light-blue: #E3F2FD;
+    --white: #FFFFFF;
+    --gray-50: #FAFAFA;
+    --gray-200: #EEEEEE;
+    --gray-600: #757575;
+    --gray-900: #212121;
+    --shadow-2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    --shadow-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+  }
+
+  .admin-delete-wrap {
+    position: relative;
+    padding: 28px;
+    margin: -20px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 50%, #90CAF9 100%);
+    overflow: hidden;
+    min-height: 100vh;
+    width: 100%;
+  }
+
+  .admin-delete-wrap::before,
+  .admin-delete-wrap::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+  }
+
+  .admin-delete-wrap::before {
+    top: -35%;
+    right: -10%;
+    width: 360px;
+    height: 360px;
+    background: rgba(255, 255, 255, 0.45);
+  }
+
+  .admin-delete-wrap::after {
+    bottom: -30%;
+    left: -10%;
+    width: 320px;
+    height: 320px;
+    background: rgba(25, 118, 210, 0.18);
+  }
+
+  .admin-delete-card {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 16px;
+    box-shadow: var(--shadow-3);
+    padding: 22px;
+  }
+
+  .admin-delete-header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .admin-delete-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+    color: var(--white);
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-2);
+  }
+
+  .admin-delete-title {
+    margin: 0;
+    font-size: 20px;
+    color: var(--gray-900);
+  }
+
+  .admin-delete-subtitle {
+    margin: 4px 0 0;
+    color: var(--gray-600);
+    font-size: 13px;
+  }
+
+  .admin-delete-section {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+  }
+
+  .admin-delete-section h2 {
+    font-size: 14px;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+  }
+
+  .admin-delete-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+
+  .admin-delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .admin-delete-btn.confirm {
+    background: #D32F2F;
+    color: var(--white);
+    box-shadow: var(--shadow-2);
+  }
+
+  .admin-delete-btn.cancel {
+    background: var(--light-blue);
+    color: var(--primary-blue-dark);
+    border: 1px solid #BBDEFB;
+  }
+
+  .admin-delete-list {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--gray-900);
+  }
+
+  .admin-delete-section ul,
+  .admin-delete-section ol {
+    margin: 0;
+    padding-left: 18px;
+  }
+
+  .admin-delete-section li {
+    margin: 6px 0;
+    line-height: 1.5;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-delete-wrap">
+  <div class="admin-delete-card">
+    <div class="admin-delete-header">
+      <div class="admin-delete-icon">!</div>
+      <div>
+        <h1 class="admin-delete-title">批量删除确认</h1>
+        <p class="admin-delete-subtitle">以下内容将被永久删除。</p>
+      </div>
+    </div>
+
+    {% if perms_lacking %}
+      <div class="admin-delete-section">
+        <h2>权限不足</h2>
+        <p class="admin-delete-subtitle">以下对象没有删除权限：</p>
+        <ul class="admin-delete-list">
+          {% for obj in perms_lacking %}
+            <li>{{ obj }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="admin-delete-actions">
+        <a class="admin-delete-btn cancel" href="{% url 'admin:index' %}">返回</a>
+      </div>
+    {% elif protected %}
+      <div class="admin-delete-section">
+        <h2>存在受保护对象</h2>
+        <p class="admin-delete-subtitle">以下对象受保护，无法删除：</p>
+        <ul class="admin-delete-list">
+          {% for obj in protected %}
+            <li>{{ obj }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="admin-delete-actions">
+        <a class="admin-delete-btn cancel" href="{% url 'admin:index' %}">返回</a>
+      </div>
+    {% else %}
+    <div class="admin-delete-section">
+      <h2>即将删除的内容</h2>
+      {% if deleted_objects %}
+        {% for obj in deleted_objects %}
+          {{ obj|to_list_if_string|unordered_list|safe }}
+        {% endfor %}
+      {% else %}
+        {% for obj in deletable_objects %}
+          {{ obj|to_list_if_string|unordered_list|safe }}
+        {% endfor %}
+      {% endif %}
+    </div>
+      <form method="post">
+        {% csrf_token %}
+        {% for obj in queryset %}
+          <input type="hidden" name="{{ action_checkbox_name|default:'_selected_action' }}" value="{{ obj.pk }}">
+        {% endfor %}
+        <input type="hidden" name="action" value="delete_selected">
+        <input type="hidden" name="post" value="yes">
+        <div class="admin-delete-actions">
+          <button type="submit" class="admin-delete-btn confirm">确认删除</button>
+          <a class="admin-delete-btn cancel" href="{% url 'admin:index' %}">取消</a>
+        </div>
+      </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

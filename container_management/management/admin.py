@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Q, F
 from .models import (
     Party,
     PortMaster,
@@ -16,7 +17,9 @@ from .models import (
     Booking,
     Task,
 )
-
+admin.site.site_header = "港口集装箱运营管理系统"
+admin.site.site_title = "港口集装箱运营管理系统"
+# admin.site.index_title = "港口集装箱运营管理系统"
 
 # 使用默认的 Django Admin（配合 simpleui），仅保留模型注册和字段配置
 @admin.register(Party)
@@ -103,6 +106,10 @@ class VesselVisitAdmin(admin.ModelAdmin):
     list_per_page = 20
     # 本地数据库无时区表时，date_hierarchy 会触发 CONVERT_TZ 报错，先停用
     # date_hierarchy = 'ata'
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        # Keep rows where berth is NULL OR berth.port_id == port_id
+        return qs.filter(Q(berth_id__isnull=True) | Q(berth_id__port_id=F('port_id')))
 
 
 @admin.register(Booking)
