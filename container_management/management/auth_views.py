@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from .models import Users
 from .utils import get_user_permission_names, get_user_role
+from .dashboard_context import dashboard_stats
 
 
 @require_http_methods(["GET", "POST"])
@@ -205,7 +206,13 @@ def dashboard(request):
     else:
         # 访客：显示基本信息
         context.update(get_guest_dashboard_data())
-    
+    # 合并 dashboard_stats（包含仪表盘通用数据和视图样本）
+    try:
+        context.update(dashboard_stats(request))
+    except Exception:
+        # 若 dashboard_stats 抛错，仍返回已有 context
+        pass
+
     return render(request, f'management/dashboard_{user_role}.html', context)
 
 

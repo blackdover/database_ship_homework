@@ -13,7 +13,8 @@
     .legend { list-style: none; padding: 0; margin: 0; }
     .legend li { display: flex; align-items: center; gap: 6px; font-size: 13px; margin-bottom: 6px; }
     .legend .dot { width: 12px; height: 12px; border-radius: 50%; }
-    .chart-small { max-width: 320px; height: 160px; }
+    /* 调整图表默认尺寸以便在仪表盘中显示更清晰 */
+    .chart-small { max-width: 480px; height: 240px; }
 </style>
 
 <div class="dash-wrap">
@@ -62,7 +63,7 @@
     </div>
 
     <!-- 可视化图表：饼图 / 柱状图 / 折线图 -->
-    <div class="row-flex" style="margin-top:16px;">
+    <!-- <div class="row-flex" style="margin-top:16px;">
         <div class="card-plain">
             <h4 style="margin: 0 0 8px;">任务状态（饼图）</h4>
             <canvas id="chart-pie" class="chart-small"></canvas>
@@ -75,7 +76,7 @@
             <h4 style="margin: 0 0 8px;">最近船舶访问（折线图）</h4>
             <canvas id="chart-line" class="chart-small"></canvas>
         </div>
-    </div>
+    </div> -->
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
@@ -179,5 +180,37 @@
                 </tbody>
             </table>
         </div>
+    </div>
+    <!-- 新增：数据库视图样本（与“最近船舶访问”样式一致的多个区块） -->
+    <div style="margin-top: 18px;">
+        {% for vname, sample in db_view_samples.items %}
+        <div class="card-plain" style="margin-bottom:12px;">
+            <h4 style="margin: 0 0 8px;">{{ sample.display_name }}</h4>
+            <div class="table-responsive">
+                <table class="table-mini">
+                    <thead>
+                        <tr>
+                            {% for col in sample.columns %}
+                                <th>{{ col }}</th>
+                            {% empty %}
+                                <th>无字段</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in sample.rows %}
+                            <tr>
+                                {% for cell in row %}
+                                    <td>{{ cell|default:"-" }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="{{ sample.columns|length|default:1 }}" class="text-muted" style="text-align:center;">暂无数据</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endfor %}
     </div>
 </div>
