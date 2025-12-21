@@ -1,0 +1,259 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.8 Chrome/140.0.7339.240 Electron/38.4.0 Safari/537.36" version="28.2.8">
+  <diagram name="系统功能结构图" id="system-architecture">
+    <mxGraphModel dx="1516" dy="1035" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="港口集装箱运营系统&amp;nbsp;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#80D0C3;strokeColor=#000000;fontSize=24;fontStyle=1;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="577.5" y="20" width="495" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="frontend-layer" value="前端展示层" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#9EAAC4;strokeColor=#000000;fontSize=18;fontStyle=1;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="100" y="120" width="1460" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="admin-interface" value="Django Admin 管理界面" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#A6DDEA;strokeColor=#000000;fontSize=14;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="380" y="190" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="custom-templates" value="自定义模板系统&#xa;(6个模板页面)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#A6DDEA;strokeColor=#000000;fontSize=14;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="640" y="190" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="dashboard" value="用户仪表板&#xa;(4种角色视图)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#A6DDEA;strokeColor=#000000;fontSize=14;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="900" y="190" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="static-files" value="静态资源&#xa;(CSS/JS)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#A6DDEA;strokeColor=#000000;fontSize=14;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="1160" y="190" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="app-layer" value="应用业务层" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#9EAAC4;strokeColor=#000000;fontSize=18;fontStyle=1;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="100" y="280" width="1460" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-module-title" value="认证授权模块" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3A59A;strokeColor=#000000;fontSize=14;fontStyle=1;verticalAlign=top;align=center;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="120" y="340" width="200" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="login" value="用户登录" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="130" y="380" width="85" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="logout" value="用户登出" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="225" y="380" width="85" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="session" value="会话管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="130" y="420" width="85" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="role-check" value="角色判断" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="225" y="420" width="85" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="permission-query" value="权限查询" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="130" y="460" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="admin-module-title" value="管理模块" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3A59A;strokeColor=#000000;fontSize=14;fontStyle=1;verticalAlign=top;align=center;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="360" y="340" width="200" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="admin-site" value="自定义Admin站点" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="370" y="380" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="model-register" value="模型注册 (15个)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="370" y="420" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="admin-search" value="搜索与过滤" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="370" y="460" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="function-module-title" value="功能视图模块" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3A59A;strokeColor=#000000;fontSize=14;fontStyle=1;verticalAlign=top;align=center;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="600" y="340" width="450" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="yard-inventory" value="堆场库存查询" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="610" y="380" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="vessel-visit" value="船舶访问管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="720" y="380" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="task-mgmt" value="任务管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="830" y="380" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="statistics" value="统计报表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="940" y="380" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="view-query" value="使用数据库视图查询" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="610" y="420" width="430" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="view-details" value="视图详情展示" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="610" y="460" width="430" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="data-access-layer" value="数据访问层" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#9EAAC4;strokeColor=#000000;fontSize=18;fontStyle=1;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="100" y="520" width="1460" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="models-module-title" value="Django Models&#xa;(15个数据模型)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3A59A;strokeColor=#000000;fontSize=14;fontStyle=1;verticalAlign=top;align=center;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="260" y="570" width="240" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="master-data" value="主数据模型&#xa;(相关方/港口/船舶等)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="270" y="620" width="220" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="business-data" value="业务数据模型&#xa;(集装箱/任务/订舱等)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="270" y="670" width="220" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="user-model" value="用户权限模型" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="270" y="720" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="db-views-title" value="数据库视图&#xa;(12个业务视图)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3A59A;strokeColor=#000000;fontSize=14;fontStyle=1;verticalAlign=top;align=center;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="540" y="570" width="270" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="inventory-view" value="堆场库存视图" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="550" y="620" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="task-view" value="任务详情视图" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="680" y="620" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="vessel-view" value="船舶访问视图" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="550" y="660" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="stat-view" value="统计视图" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="680" y="660" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="other-views" value="其他业务视图 (8个)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="550" y="700" width="250" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="orm-query-title" value="ORM查询接口" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3A59A;strokeColor=#000000;fontSize=14;fontStyle=1;verticalAlign=top;align=center;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="860" y="580" width="220" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="model-query" value="模型查询" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="870" y="620" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="filter-search" value="过滤与搜索" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="870" y="660" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="raw-sql" value="原生SQL查询" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="870" y="700" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="connector-title" value="数据库连接器" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3A59A;strokeColor=#000000;fontSize=14;fontStyle=1;verticalAlign=top;align=center;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="580" width="220" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="mysql-client" value="MySQL客户端" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="1130" y="620" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="connection-pool" value="连接池管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="1130" y="660" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="transaction" value="事务管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="1130" y="700" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="data-layer" value="数据存储层" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#9EAAC4;strokeColor=#000000;fontSize=18;fontStyle=1;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="100" y="780" width="1460" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="mysql-db-title" value="MySQL 数据库" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3A59A;strokeColor=#000000;fontSize=14;fontStyle=1;verticalAlign=top;align=center;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="120" y="840" width="320" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="tables" value="数据表 (15个)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="130" y="880" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="views-db" value="视图 (12个)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="290" y="880" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="triggers" value="触发器 (6个)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="130" y="920" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="constraints" value="约束与索引" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="290" y="920" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="stored-proc" value="存储过程" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="130" y="960" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="master-tables-title" value="主数据表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3A59A;strokeColor=#000000;fontSize=14;fontStyle=1;verticalAlign=top;align=center;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="480" y="840" width="320" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="party-table" value="相关方表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="490" y="880" width="90" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="port-table" value="港口表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="590" y="880" width="90" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="vessel-table" value="船舶表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="690" y="880" width="90" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="berth-table" value="泊位表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="490" y="915" width="90" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="yard-table" value="堆场表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="590" y="915" width="90" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="container-type" value="箱型字典" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="690" y="915" width="90" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="stack-table" value="堆栈表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="490" y="950" width="90" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="block-table" value="堆场区表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="590" y="950" width="90" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="business-tables-title" value="业务数据表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3A59A;strokeColor=#000000;fontSize=14;fontStyle=1;verticalAlign=top;align=center;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="840" y="840" width="320" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="container-table" value="集装箱表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="850" y="880" width="90" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="visit-table" value="船舶访问表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="950" y="880" width="90" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="booking-table" value="订舱单表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="1050" y="880" width="90" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="task-table" value="任务表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="850" y="915" width="90" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="slot-table" value="箱位表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="950" y="915" width="90" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="user-tables-title" value="用户权限表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3A59A;strokeColor=#000000;fontSize=14;fontStyle=1;verticalAlign=top;align=center;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="840" width="320" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="users-table" value="用户表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="1210" y="880" width="90" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="permission-table" value="权限表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="1310" y="880" width="90" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="user-perm-table" value="用户权限关联表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+          <mxGeometry x="1410" y="880" width="100" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="edge18" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#666666;dashed=1;" edge="1" parent="1" source="login" target="session">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="vIlO8r2DXX1R6tMdsECT-1" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="1080" y="340" width="210" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="permission-module-title" value="权限工具模块" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3A59A;strokeColor=#000000;fontSize=14;fontStyle=1;verticalAlign=top;align=center;spacingTop=5;" vertex="1" parent="vIlO8r2DXX1R6tMdsECT-1">
+          <mxGeometry width="210" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="permission-check" value="权限检查" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="vIlO8r2DXX1R6tMdsECT-1" vertex="1">
+          <mxGeometry x="10" y="40" width="85" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="role-detect" value="角色检测" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="vIlO8r2DXX1R6tMdsECT-1" vertex="1">
+          <mxGeometry x="115" y="40" width="85" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="decorator" value="权限装饰器" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="vIlO8r2DXX1R6tMdsECT-1" vertex="1">
+          <mxGeometry x="10" y="80" width="85" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="view-permission" value="视图权限查询" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="vIlO8r2DXX1R6tMdsECT-1" vertex="1">
+          <mxGeometry x="115" y="80" width="85" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="permission-utils" value="权限工具函数" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" vertex="1" parent="vIlO8r2DXX1R6tMdsECT-1">
+          <mxGeometry x="10" y="120" width="190" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="vIlO8r2DXX1R6tMdsECT-2" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="1320" y="340" width="210" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="url-routing-title" value="URL路由配置" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3A59A;strokeColor=#000000;fontSize=14;fontStyle=1;verticalAlign=top;align=center;spacingTop=5;" vertex="1" parent="vIlO8r2DXX1R6tMdsECT-2">
+          <mxGeometry width="210" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-urls" value="认证路由" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="vIlO8r2DXX1R6tMdsECT-2" vertex="1">
+          <mxGeometry x="10" y="40" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="admin-urls" value="Admin路由" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="vIlO8r2DXX1R6tMdsECT-2" vertex="1">
+          <mxGeometry x="110" y="40" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="custom-urls" value="自定义视图路由" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" parent="vIlO8r2DXX1R6tMdsECT-2" vertex="1">
+          <mxGeometry x="10" y="80" width="190" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="redirect-urls" value="重定向路由" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CDBF;strokeColor=#000000;fontSize=12;verticalAlign=middle;align=center;" vertex="1" parent="vIlO8r2DXX1R6tMdsECT-2">
+          <mxGeometry x="10" y="120" width="190" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

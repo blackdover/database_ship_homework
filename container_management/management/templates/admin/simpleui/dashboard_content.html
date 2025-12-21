@@ -1,0 +1,183 @@
+<style>
+    .dash-wrap { padding: 16px; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .kpi-card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+    .kpi-label { color: #6b7280; font-size: 13px; margin-bottom: 6px; }
+    .kpi-value { font-size: 28px; font-weight: 600; color: #111827; }
+    .row-flex { display: flex; gap: 16px; flex-wrap: wrap; }
+    .card-plain { flex: 1 1 320px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+    .table-mini { width: 100%; border-collapse: collapse; }
+    .table-mini th, .table-mini td { padding: 8px 6px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+    .table-mini th { text-align: left; color: #4b5563; }
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; background: #eef2ff; color: #4338ca; }
+    .legend { list-style: none; padding: 0; margin: 0; }
+    .legend li { display: flex; align-items: center; gap: 6px; font-size: 13px; margin-bottom: 6px; }
+    .legend .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .chart-small { max-width: 320px; height: 160px; }
+</style>
+
+<div class="dash-wrap">
+    <h2 style="margin: 0 0 12px; font-size: 20px;">运营仪表盘</h2>
+
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label">集装箱总数</div>
+            <div class="kpi-value">{{ kpi_total_containers|default:0 }}</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">在堆场</div>
+            <div class="kpi-value">{{ kpi_in_yard|default:0 }}</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">任务总数 / 待处理</div>
+            <div class="kpi-value">{{ kpi_total_tasks|default:0 }} / {{ kpi_pending_tasks|default:0 }}</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">船舶访问 / 靠泊</div>
+            <div class="kpi-value">{{ kpi_total_visits|default:0 }} / {{ kpi_at_berth|default:0 }}</div>
+        </div>
+    </div>
+
+    <div class="row-flex">
+        <div class="card-plain">
+            <h4 style="margin: 0 0 8px;">任务状态分布</h4>
+            <ul class="legend">
+                {% for item in task_status_stats %}
+                <li><span class="dot" style="background:#60a5fa;"></span>{{ item.name }}：{{ item.value }}</li>
+                {% empty %}
+                <li class="text-muted">暂无数据</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="card-plain">
+            <h4 style="margin: 0 0 8px;">集装箱状态分布</h4>
+            <ul class="legend">
+                {% for item in container_status_stats %}
+                <li><span class="dot" style="background:#34d399;"></span>{{ item.name }}：{{ item.value }}</li>
+                {% empty %}
+                <li class="text-muted">暂无数据</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- 可视化图表：饼图 / 柱状图 / 折线图 -->
+    <div class="row-flex" style="margin-top:16px;">
+        <div class="card-plain">
+            <h4 style="margin: 0 0 8px;">任务状态（饼图）</h4>
+            <canvas id="chart-pie" class="chart-small"></canvas>
+        </div>
+        <div class="card-plain">
+            <h4 style="margin: 0 0 8px;">集装箱状态（柱状图）</h4>
+            <canvas id="chart-bar" class="chart-small"></canvas>
+        </div>
+        <div class="card-plain">
+            <h4 style="margin: 0 0 8px;">最近船舶访问（折线图）</h4>
+            <canvas id="chart-line" class="chart-small"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        (function(){
+            // 任务状态数据（饼图）
+            const taskLabels = [{% for it in task_status_stats %}'{{ it.name }}'{% if not forloop.last %}, {% endif %}{% endfor %}];
+            const taskData = [{% for it in task_status_stats %}{{ it.value }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+
+            // 集装箱状态数据（柱状图）
+            const containerLabels = [{% for it in container_status_stats %}'{{ it.name }}'{% if not forloop.last %}, {% endif %}{% endfor %}];
+            const containerData = [{% for it in container_status_stats %}{{ it.value }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+
+            // 最近访问数据（折线图） - 按日期统计
+            const visitDatesRaw = [{% for v in recent_visits %}'{{ v.ata|date:"Y-m-d" }}'{% if not forloop.last %}, {% endif %}{% endfor %}];
+            // 统计每个日期出现次数
+            const visitCountByDate = {};
+            visitDatesRaw.forEach(function(d){ if(!d) return; visitCountByDate[d] = (visitCountByDate[d] || 0) + 1; });
+            const visitDates = Object.keys(visitCountByDate).sort();
+            const visitCounts = visitDates.map(d => visitCountByDate[d]);
+
+            // utility colors
+            const palette = ['#60a5fa','#34d399','#f97316','#f43f5e','#a78bfa','#f59e0b','#06b6d4','#ef4444'];
+
+            // Create Pie chart
+            try {
+                const pieCtx = document.getElementById('chart-pie').getContext('2d');
+                new Chart(pieCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: taskLabels.length ? taskLabels : ['无数据'],
+                        datasets: [{
+                            data: taskData.length ? taskData : [1],
+                            backgroundColor: palette
+                        }]
+                    },
+                    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+                });
+            } catch(e){ console.warn('pie chart init failed', e); }
+
+            // Create Bar chart
+            try {
+                const barCtx = document.getElementById('chart-bar').getContext('2d');
+                new Chart(barCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: containerLabels.length ? containerLabels : ['无数据'],
+                        datasets: [{
+                            label: '数量',
+                            data: containerData.length ? containerData : [0],
+                            backgroundColor: palette.slice(0, containerLabels.length || 1)
+                        }]
+                    },
+                    options: { responsive: true, scales: { y: { beginAtZero:true } }, plugins: { legend: { display: false } } }
+                });
+            } catch(e){ console.warn('bar chart init failed', e); }
+
+            // Create Line chart
+            try {
+                const lineCtx = document.getElementById('chart-line').getContext('2d');
+                new Chart(lineCtx, {
+                    type: 'line',
+                    data: {
+                        labels: visitDates.length ? visitDates : ['无数据'],
+                        datasets: [{
+                            label: '访问次数',
+                            data: visitCounts.length ? visitCounts : [0],
+                            borderColor: '#1976D2',
+                            backgroundColor: 'rgba(33,118,210,0.12)',
+                            fill: true,
+                            tension: 0.3,
+                        }]
+                    },
+                    options: { responsive: true, scales: { y: { beginAtZero:true } }, plugins: { legend: { display: false } } }
+                });
+            } catch(e){ console.warn('line chart init failed', e); }
+        })();
+    </script>
+    <div class="card-plain" style="margin-top: 16px;">
+        <h4 style="margin: 0 0 8px;">最近船舶访问</h4>
+        <div class="table-responsive">
+            <table class="table-mini">
+                <thead>
+                    <tr>
+                        <th>船名</th>
+                        <th>港口</th>
+                        <th>到港时间</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for v in recent_visits %}
+                    <tr>
+                        <td>{{ v.vessel_id__vessel_name|default:"-" }}</td>
+                        <td>{{ v.port_id__port_name|default:"-" }}</td>
+                        <td>{{ v.ata|default:"-" }}</td>
+                        <td><span class="pill">{{ v.status|default:"-" }}</span></td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="4" class="text-muted" style="text-align:center;">暂无数据</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
