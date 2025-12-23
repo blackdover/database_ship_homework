@@ -50,6 +50,61 @@ class UsersAdmin(admin.ModelAdmin):
     list_filter = ['is_active']
     search_fields = ['username', 'full_name', 'email']
     list_per_page = 20
+    hide_for_operator = True
+    def has_module_permission(self, request):
+        # Hide this model from operator users (only hide; do not change backend permissions)
+        role = request.session.get('user_role')
+        if role == 'operator' and getattr(self, 'hide_for_operator', False):
+            return False
+        return super().has_module_permission(request)
+    def get_model_perms(self, request):
+        """
+        Return empty perms for operator so Django's app list / menu generation
+        will not include this model for operator users.
+        """
+        role = request.session.get('user_role')
+        if role == 'operator' and getattr(self, 'hide_for_operator', False):
+            return {}
+        return super().get_model_perms(request)
+
+
+@admin.register(Permissions)
+class PermissionsAdmin(admin.ModelAdmin):
+    """管理员界面：权限定义表"""
+    list_display = ['permission_id', 'permission_name', 'description']
+    search_fields = ['permission_name', 'description']
+    list_per_page = 50
+    hide_for_operator = True
+    def has_module_permission(self, request):
+        role = request.session.get('user_role')
+        if role == 'operator' and getattr(self, 'hide_for_operator', False):
+            return False
+        return super().has_module_permission(request)
+    def get_model_perms(self, request):
+        role = request.session.get('user_role')
+        if role == 'operator' and getattr(self, 'hide_for_operator', False):
+            return {}
+        return super().get_model_perms(request)
+
+
+@admin.register(UserPermissions)
+class UserPermissionsAdmin(admin.ModelAdmin):
+    """管理员界面：用户与权限关联表"""
+    list_display = ['user_id', 'permission_id']
+    list_filter = ['permission_id']
+    search_fields = ['user_id__username', 'permission_id__permission_name']
+    list_per_page = 50
+    hide_for_operator = True
+    def has_module_permission(self, request):
+        role = request.session.get('user_role')
+        if role == 'operator' and getattr(self, 'hide_for_operator', False):
+            return False
+        return super().has_module_permission(request)
+    def get_model_perms(self, request):
+        role = request.session.get('user_role')
+        if role == 'operator' and getattr(self, 'hide_for_operator', False):
+            return {}
+        return super().get_model_perms(request)
 
 
 @admin.register(ContainerTypeDict)

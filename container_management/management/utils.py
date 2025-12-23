@@ -106,12 +106,23 @@ def get_user_role(user_id, django_user=None):
     
     permissions = get_user_permission_names(user_id)
     
-    if 'ADMIN' in permissions:
+    # Normalize permission names to uppercase for robust matching
+    try:
+        perm_set = {p.strip().upper() for p in permissions if p}
+    except Exception:
+        perm_set = set()
+
+    if 'ADMIN' in perm_set:
         return 'admin'
-    elif 'CREATE_TASK' in permissions or 'UPDATE_TASK' in permissions:
+
+    # Accept both explicit operator permission names and a generic 'OPERATOR' entry
+    operator_keys = {'CREATE_TASK', 'UPDATE_TASK', 'OPERATOR'}
+    if perm_set.intersection(operator_keys):
         return 'operator'
-    elif 'VIEW_INVENTORY' in permissions or 'VIEW_STATISTICS' in permissions:
+
+    viewer_keys = {'VIEW_INVENTORY', 'VIEW_STATISTICS', 'VIEW'}
+    if perm_set.intersection(viewer_keys):
         return 'viewer'
-    else:
-        return 'guest'
+
+    return 'guest'
 
