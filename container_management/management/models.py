@@ -1,15 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.core.exceptions import ValidationError
-
-# 堆场区类型枚举（用于模型字段 choices）
-BLOCK_TYPE_CHOICES = [
-    ("Standard", "标准"),
-    ("Reefer", "冷藏"),
-    ("Temporary", "临时"),
-    ("Heavy", "重载"),
-    ("Bulk", "散货"),
-]
 
 
 # 相关方表
@@ -54,13 +44,6 @@ class PortMaster(models.Model):
 class YardBlock(models.Model):
     block_id = models.AutoField(primary_key=True, db_column='Block_ID')
     block_name = models.CharField(max_length=50, unique=True, db_column='Block_Name', verbose_name='名称')
-    block_type = models.CharField(
-        max_length=20,
-        choices=BLOCK_TYPE_CHOICES,
-        default="Standard",
-        db_column='Block_Type',
-        verbose_name='类型',
-    )
 
     class Meta:
         db_table = 'Yard_Block'
@@ -216,20 +199,7 @@ class YardSlot(models.Model):
     stack_id = models.ForeignKey(YardStack, on_delete=models.CASCADE, db_column='Stack_ID', verbose_name='所属堆栈')
     tier_number = models.IntegerField(db_column='Tier_Number', verbose_name='层号')
     slot_coordinates = models.CharField(max_length=50, unique=True, db_column='Slot_Coordinates', verbose_name='坐标')
-    # 箱位状态枚举
-    SLOT_STATUS_CHOICES = [
-        ("Available", "可用"),
-        ("Occupied", "占用"),
-        ("Reserved", "预留"),
-        ("Maintenance", "维护"),
-    ]
-    slot_status = models.CharField(
-        max_length=20,
-        choices=SLOT_STATUS_CHOICES,
-        default="Available",
-        db_column='Slot_Status',
-        verbose_name='状态',
-    )
+
     current_container_id = models.OneToOneField(ContainerMaster, on_delete=models.SET_NULL, null=True, blank=True, 
                                                 db_column='Current_Container_ID', verbose_name='当前集装箱')
 
@@ -265,25 +235,6 @@ class VesselVisit(models.Model):
     def __str__(self):
         return f"{self.vessel_id.vessel_name} - {self.voyage_number_in}"
 
-    def clean(self):
-        """
-        Ensure that if a berth is set, it belongs to the same port as port_id.
-        This prevents inconsistent data like port = Guangzhou but berth belongs to Yangshan.
-        """
-        # Only validate if both fields are set (and berth has a related port)
-        if self.berth_id and self.port_id:
-            # berth_id is a Berth instance; its port FK field is `port_id`
-            if self.berth_id.port_id_id is not None:
-                if self.berth_id.port_id_id != self.port_id_id:
-                    raise ValidationError(
-                        {"berth_id": "所选泊位不属于所选挂靠港口，请选择同一港口下的泊位。"}
-                    )
-
-    def save(self, *args, **kwargs):
-        # Run full clean to enforce validation on programmatic saves as well
-        self.full_clean()
-        super().save(*args, **kwargs)
-
 
 # 订舱单
 class Booking(models.Model):
@@ -308,61 +259,4 @@ class Booking(models.Model):
     def __str__(self):
         return self.booking_number
 
-# 任务表
-class Task(models.Model):
-     task_id = models.AutoField(primary_key=True, db_column='Task_ID')
-     task_type = models.CharField(
-         max_length=30,
-         db_column='Task_Type',
-         choices=[
-             ('Load', '装船'),
-             ('Discharge', '卸船'),
-             ('Move', '移箱'),
-             ('GateIn', '进闸'),
-             ('GateOut', '出闸'),
-         ],
-         verbose_name='任务类型',
-     )
-     status = models.CharField(
-         max_length=20,
-         default='Pending',
-         db_column='Status',
-         choices=[
-             ('Pending', '待处理'),
-             ('InProgress', '进行中'),
-             ('Completed', '已完成'),
-             ('Cancelled', '已取消'),
-         ],
-         verbose_name='状态',
-     )
-     container_master_id = models.ForeignKey(
-         ContainerMaster, on_delete=models.CASCADE, db_column='Container_Master_ID', verbose_name='集装箱'
-     )
-     from_slot_id = models.ForeignKey(
-         YardSlot, on_delete=models.CASCADE, related_name='tasks_from', db_column='From_Slot_ID', verbose_name='起始箱位'
-     )
-     to_slot_id = models.ForeignKey(
-         YardSlot, on_delete=models.CASCADE, related_name='tasks_to', db_column='To_Slot_ID', verbose_name='目标箱位'
-     )
-     vessel_visit_id = models.ForeignKey(
-         VesselVisit, on_delete=models.SET_NULL, null=True, blank=True, db_column='Vessel_Visit_ID', verbose_name='船舶访问'
-     )
-     created_by_user_id = models.ForeignKey(
-         Users, on_delete=models.CASCADE, related_name='created_tasks', db_column='Created_By_User_ID', verbose_name='创建人'
-     )
-     assigned_user_id = models.ForeignKey(
-         Users, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_tasks', db_column='Assigned_User_ID', verbose_name='指派给'
-     )
-     actual_executor_id = models.ForeignKey(
-         Users, on_delete=models.SET_NULL, null=True, blank=True, related_name='executed_tasks', db_column='Actual_Executor_ID', verbose_name='实际执行人'
-     )
-     priority = models.IntegerField(default=100, db_column='Priority', verbose_name='优先级')
-     movement_timestamp = models.DateTimeField(null=True, blank=True, db_column='Movement_Timestamp', verbose_name='实际移动时间戳')
 
-     class Meta:
-         db_table = 'Task'
-         verbose_name = '作业任务'
-         verbose_name_plural = '作业任务'
-
-     def __str__(self):
-         return f"{self.task_type} - {self.container_master_id.container_number}"
