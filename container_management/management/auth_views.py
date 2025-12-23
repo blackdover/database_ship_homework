@@ -10,6 +10,7 @@ from django.views.decorators.http import require_http_methods
 from .models import Users
 from .utils import get_user_permission_names, get_user_role
 from .dashboard_context import dashboard_stats
+from django.template import TemplateDoesNotExist
 
 
 @require_http_methods(["GET", "POST"])
@@ -18,7 +19,8 @@ def custom_login(request):
     自定义登录页面
     """
     # 获取重定向目标（Django Admin 会传递 next 参数）
-    next_url = request.GET.get('next') or request.POST.get('next') or '/admin/'
+    # 先不设置默认，登录成功后根据用户角色决定跳转（admin -> /admin/，非 admin -> /dashboard/）
+    next_url = request.GET.get('next') or request.POST.get('next') or None
     
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -50,8 +52,17 @@ def custom_login(request):
                     request.session['user_role'] = 'admin'
                 
                 messages.success(request, f'欢迎回来，{db_user.full_name or username}！')
-                # 重定向到 next 参数指定的页面，如果没有则重定向到 /admin/
-                return redirect(next_url)
+                # 根据用户角色决定最终跳转目标：admin/staff 优先跳转到 admin，否则跳 dashboard
+                try:
+                    is_staff_user = user.is_superuser or getattr(user, 'is_staff', False)
+                    # 如果 next 指向 admin 且当前不是 admin/staff，则忽略 next，强制去 dashboard
+                    if next_url and next_url.startswith('/admin') and not is_staff_user:
+                        target = '/dashboard/'
+                    else:
+                        target = next_url or ('/admin/' if is_staff_user else '/dashboard/')
+                except Exception:
+                    target = next_url or '/dashboard/'
+                return redirect(target)
             except Users.DoesNotExist:
                 # 如果Django用户存在但数据库用户不存在，尝试自动创建
                 try:
@@ -99,7 +110,15 @@ def custom_login(request):
                             pass  # 如果权限表未初始化，忽略
                     
                     messages.success(request, f'欢迎回来，{db_user.full_name or username}！用户信息已自动同步。')
-                    return redirect(next_url)
+                    try:
+                        is_staff_user = user.is_superuser or getattr(user, 'is_staff', False)
+                        if next_url and next_url.startswith('/admin') and not is_staff_user:
+                            target = '/dashboard/'
+                        else:
+                            target = next_url or ('/admin/' if is_staff_user else '/dashboard/')
+                    except Exception:
+                        target = next_url or '/dashboard/'
+                    return redirect(target)
                 except Exception as e:
                     # 如果自动创建失败，检查是否是超级用户
                     if user.is_superuser:
@@ -120,6 +139,10 @@ def custom_login(request):
         else:
             messages.error(request, '用户名或密码错误')
     
+    return render(request, 'management/login.html', {'next': next_url})
+    # GET 请求时给未登录用户一个欢迎提示（确保登出后也能看到欢迎提示）
+    if request.method == 'GET' and not request.user.is_authenticated:
+        messages.info(request, '欢迎回来，访客！')
     return render(request, 'management/login.html', {'next': next_url})
 
 
@@ -213,7 +236,15 @@ def dashboard(request):
         # 若 dashboard_stats 抛错，仍返回已有 context
         pass
 
-    return render(request, f'management/dashboard_{user_role}.html', context)
+    # 尝试渲染角色对应的模板；若模板不存在则回退到合理的默认页面
+    try:
+        return render(request, f'management/dashboard_{user_role}.html', context)
+    except TemplateDoesNotExist:
+        # 管理员使用 simpleui 的 admin 仪表盘
+        if user_role == 'admin':
+            return render(request, 'admin/simpleui/dashboard.html', context)
+        # 其他角色回退到极简访客仪表盘（只读）
+        return render(request, 'management/dashboard_guest_minimal.html', context)
 
 
 def get_admin_dashboard_data():

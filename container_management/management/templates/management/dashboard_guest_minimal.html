@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>欢迎 - 仪表盘</title>
+    {% load static %}
+    <style>
+        :root{
+            --bg1:#f7fbff;
+            --accent:#2563eb;
+            --accent-2:#06b6d4;
+            --card-bg: linear-gradient(180deg,#ffffff,#fbfdff);
+            --muted:#6b7280;
+            --glass: rgba(255,255,255,0.6);
+        }
+        html,body{height:100%;}
+        body{
+            margin:0;
+            font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+            background: radial-gradient(1200px 400px at 10% 10%, rgba(37,99,235,0.06), transparent 10%),
+                        radial-gradient(800px 300px at 90% 90%, rgba(6,182,212,0.04), transparent 10%),
+                        linear-gradient(180deg,var(--bg1),#ffffff);
+            color:#072033;
+            display:flex;
+            min-height:100vh;
+            align-items:flex-start;
+            justify-content:center;
+            padding:28px;
+        }
+        .dash-wrap { width: min(1150px,96vw); padding: 22px; border-radius:14px; background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(250,250,255,0.6)); box-shadow: 0 12px 40px rgba(10,20,40,0.06); backdrop-filter: blur(6px); }
+        .panel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom: 18px; gap:12px; }
+        .panel-title { font-size:22px; margin:0; font-weight:700; color:var(--accent); }
+        .small { color:var(--muted); font-size:13px; margin-top:4px; }
+        .logout-link { color: #ef4444; text-decoration:none; font-weight:600; background: transparent; padding:8px 12px; border-radius:8px; transition:all .15s; }
+        .logout-link:hover { transform:translateY(-1px); box-shadow: 0 4px 14px rgba(239,68,68,0.08); }
+
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 18px; }
+        .kpi-card { border: 1px solid rgba(14,165,233,0.06); border-radius: 12px; padding: 18px; background: var(--card-bg); box-shadow: 0 6px 20px rgba(20,40,80,0.04); text-align:left; }
+        .kpi-label { color: var(--muted); font-size: 13px; margin-bottom: 8px; display:flex; align-items:center; gap:8px; }
+        .kpi-value { font-size: 28px; font-weight: 700; color:#0f172a; }
+        .kpi-sub { font-size:13px; color:var(--muted); margin-top:6px; }
+
+        .row-flex { display:flex; gap:16px; flex-wrap:wrap; margin-top:8px; }
+        .card-plain { flex: 1 1 320px; border: 1px solid #eef2ff; border-radius: 12px; padding: 12px; background: white; box-shadow: 0 6px 18px rgba(10,20,40,0.04); }
+        .table-mini { width: 100%; border-collapse: collapse; }
+        .table-mini th, .table-mini td { padding: 8px 6px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+        .table-mini th { text-align: left; color: #475569; }
+        .pill { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 12px; background: linear-gradient(90deg,#eef2ff,#f8fafc); color: #1e293b; }
+        .legend { list-style: none; padding: 0; margin: 0; }
+        .legend li { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-bottom: 8px; }
+        .legend .dot { width: 12px; height: 12px; border-radius: 50%; display:inline-block; }
+        .chart-small { max-width: 480px; height: 240px; }
+        .muted-center { text-align:center; color:var(--muted); padding:18px 0; }
+
+        @media (max-width:720px){
+            .panel-header{flex-direction:column;align-items:flex-start;gap:8px;}
+        }
+    </style>
+</head>
+<body>
+    <div class="dash-wrap" role="main" aria-live="polite">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">欢迎，{{ user_full_name }}</h2>
+                <div class="small">访客视图</div>
+            </div>
+            <div>
+                <a class="logout-link" href="{% url 'custom_logout' %}">退出登录</a>
+            </div>
+        </div>
+
+        <div class="kpi-grid" aria-hidden="{% if not kpi_total_containers and not kpi_in_yard %}true{% else %}false{% endif %}">
+            <div class="kpi-card">
+                <div class="kpi-label">集装箱总数</div>
+                <div class="kpi-value">{{ kpi_total_containers|default:0 }}</div>
+                <div class="kpi-sub">当前系统中登记的集装箱数量</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">在堆场</div>
+                <div class="kpi-value">{{ kpi_in_yard|default:0 }}</div>
+                <div class="kpi-sub">当前停放在堆场的集装箱</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">任务总数 / 待处理</div>
+                <div class="kpi-value">{{ kpi_total_tasks|default:0 }} / {{ kpi_pending_tasks|default:0 }}</div>
+                <div class="kpi-sub">当前任务概览</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">最近访问</div>
+                <div class="kpi-value">{% if recent_visits %}{{ recent_visits.0.vessel_id__vessel_name|default:'-' }}{% else %}-{% endif %}</div>
+                <div class="kpi-sub">最近一次船舶到港信息</div>
+            </div>
+        </div>
+
+        <div class="row-flex" aria-live="polite">
+            <div class="card-plain" style="min-width:320px;">
+                <h4 style="margin: 0 0 8px;">任务状态分布</h4>
+            <ul class="legend" aria-hidden="{% if not task_status_stats %}true{% else %}false{% endif %}">
+                    {% for item in task_status_stats %}
+                    <li>
+                        <span class="dot" style="background:#60a5fa;"></span>
+                        {% if item.name == 'Completed' %}已完成
+                        {% elif item.name == 'Pending' %}待处理
+                        {% elif item.name == 'InYard' or item.name == 'Inyard' %}在堆场
+                        {% elif item.name == 'GateOut' %}出闸
+                        {% elif item.name == 'OnVessel' %}在船上
+                        {% else %}{{ item.name }}
+                        {% endif %}：{{ item.value }}
+                    </li>
+                    {% empty %}
+                    <li class="muted-center">暂无数据</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card-plain" style="min-width:320px;">
+                <h4 style="margin: 0 0 8px;">集装箱状态分布</h4>
+                <ul class="legend" aria-hidden="{% if not container_status_stats %}true{% else %}false{% endif %}">
+                    {% for item in container_status_stats %}
+                    <li>
+                        <span class="dot" style="background:#34d399;"></span>
+                        {% if item.name == 'GateOut' %}出闸
+                        {% elif item.name == 'InYard' or item.name == 'Inyard' %}在堆场
+                        {% elif item.name == 'OnVessel' %}在船上
+                        {% else %}{{ item.name }}
+                        {% endif %}：{{ item.value }}
+                    </li>
+                    {% empty %}
+                    <li class="muted-center">暂无数据</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <div class="row-flex" style="margin-top:14px;">
+            <div class="card-plain" style="flex:1 1 480px;">
+                <h4 style="margin: 0 0 8px;">最近船舶访问</h4>
+                <div class="table-responsive">
+                    <table class="table-mini" role="table" aria-label="最近船舶访问">
+                        <thead>
+                            <tr>
+                                <th>船名</th>
+                                <th>港口</th>
+                                <th>到港时间</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                    <tbody>
+                    {% for v in recent_visits %}
+                        <tr>
+                            <td>{{ v.vessel_id__vessel_name|default:"-" }}</td>
+                            <td>{{ v.port_id__port_name|default:"-" }}</td>
+                            <td>{{ v.ata|default:"-" }}</td>
+                            <td>
+                                <span class="pill">
+                                    {% if v.status == 'Approaching' %}靠近中
+                                    {% elif v.status == 'AtBerth' %}靠泊
+                                    {% elif v.status == 'Completed' %}完成
+                                    {% else %}{{ v.status|default:"-" }}
+                                    {% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="4" class="muted-center">暂无数据</td></tr>
+                    {% endfor %}
+                    </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- <div class="card-plain" style="flex:1 1 320px;">
+                <h4 style="margin: 0 0 8px;">关键项概览</h4>
+                {% if container_status_stats %}
+                    <div style="margin-bottom:8px;">{{ container_status_stats.0.name }}：<strong>{{ container_status_stats.0.value }}</strong></div>
+                {% endif %}
+                {% if task_status_stats %}
+                    <div style="margin-bottom:8px;">{{ task_status_stats.0.name }}：<strong>{{ task_status_stats.0.value }}</strong></div>
+                {% endif %}
+                <div style="margin-top:10px;">
+                    <!-- <a href="#" style="text-decoration:none;color:var(--accent);font-weight:600;">查看详细报表 →</a> -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 可视化图表占位（仅在数据存在时加载） -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+        {{ task_status_stats|json_script:"task_status_stats_json" }}
+        {{ container_status_stats|json_script:"container_status_stats_json" }}
+        {{ recent_visits|json_script:"recent_visits_json" }}
+        <script>
+            (function(){
+                try {
+                    const taskStats = JSON.parse(document.getElementById('task_status_stats_json')?.textContent || '[]');
+                    const containerStats = JSON.parse(document.getElementById('container_status_stats_json')?.textContent || '[]');
+                    const recentVisits = JSON.parse(document.getElementById('recent_visits_json')?.textContent || '[]');
+
+                    const palette = ['#60a5fa','#34d399','#f97316','#f43f5e','#a78bfa','#f59e0b'];
+
+                    // 如果需要，可在此处初始化图表（当前页面保留轻量化，避免阻塞）
+                    // 预留：chart-pie / chart-bar / chart-line DOM 节点可后续加入
+                } catch(e){
+                    console.warn('dashboard init failed', e);
+                }
+            })();
+        </script>
+
+    </div>
+</body>
+</html>
+
+

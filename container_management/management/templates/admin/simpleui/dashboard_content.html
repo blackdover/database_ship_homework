@@ -44,7 +44,16 @@
             <h4 style="margin: 0 0 8px;">任务状态分布</h4>
             <ul class="legend">
                 {% for item in task_status_stats %}
-                <li><span class="dot" style="background:#60a5fa;"></span>{{ item.name }}：{{ item.value }}</li>
+                <li>
+                    <span class="dot" style="background:#60a5fa;"></span>
+                    {% if item.name == 'Completed' %}已完成
+                    {% elif item.name == 'Pending' %}待处理
+                    {% elif item.name == 'InYard' or item.name == 'Inyard' %}在堆场
+                    {% elif item.name == 'GateOut' %}出闸
+                    {% elif item.name == 'OnVessel' %}在船上
+                    {% else %}{{ item.name }}
+                    {% endif %}：{{ item.value }}
+                </li>
                 {% empty %}
                 <li class="text-muted">暂无数据</li>
                 {% endfor %}
@@ -54,7 +63,14 @@
             <h4 style="margin: 0 0 8px;">集装箱状态分布</h4>
             <ul class="legend">
                 {% for item in container_status_stats %}
-                <li><span class="dot" style="background:#34d399;"></span>{{ item.name }}：{{ item.value }}</li>
+                <li>
+                    <span class="dot" style="background:#34d399;"></span>
+                    {% if item.name == 'GateOut' %}出闸
+                    {% elif item.name == 'InYard' or item.name == 'Inyard' %}在堆场
+                    {% elif item.name == 'OnVessel' %}在船上
+                    {% else %}{{ item.name }}
+                    {% endif %}：{{ item.value }}
+                </li>
                 {% empty %}
                 <li class="text-muted">暂无数据</li>
                 {% endfor %}
@@ -79,78 +95,104 @@
     </div> -->
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    {{ task_status_stats|json_script:"task_status_stats_json" }}
+    {{ container_status_stats|json_script:"container_status_stats_json" }}
+    {{ recent_visits|json_script:"recent_visits_json" }}
     <script>
         (function(){
-            // 任务状态数据（饼图）
-            const taskLabels = [{% for it in task_status_stats %}'{{ it.name }}'{% if not forloop.last %}, {% endif %}{% endfor %}];
-            const taskData = [{% for it in task_status_stats %}{{ it.value }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+            // 从安全注入的 JSON 中读取数据并做中文映射
+            const taskStats = JSON.parse(document.getElementById('task_status_stats_json').textContent || '[]');
+            const containerStats = JSON.parse(document.getElementById('container_status_stats_json').textContent || '[]');
+            const recentVisits = JSON.parse(document.getElementById('recent_visits_json').textContent || '[]');
 
-            // 集装箱状态数据（柱状图）
-            const containerLabels = [{% for it in container_status_stats %}'{{ it.name }}'{% if not forloop.last %}, {% endif %}{% endfor %}];
-            const containerData = [{% for it in container_status_stats %}{{ it.value }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+            // 英文到中文的映射表（可根据后端新增状态扩展）
+            const zhMap = {
+                'Completed': '已完成',
+                'Pending': '待处理',
+                'InYard': '在堆场',
+                'Inyard': '在堆场',
+                'GateOut': '出闸',
+                'OnVessel': '在船上',
+                'Approaching': '靠近中',
+                'AtBerth': '靠泊'
+            };
 
-            // 最近访问数据（折线图） - 按日期统计
-            const visitDatesRaw = [{% for v in recent_visits %}'{{ v.ata|date:"Y-m-d" }}'{% if not forloop.last %}, {% endif %}{% endfor %}];
-            // 统计每个日期出现次数
+            const taskLabels = taskStats.map(i => zhMap[i.name] || i.name || '');
+            const taskData = taskStats.map(i => Number(i.value || 0));
+
+            const containerLabels = containerStats.map(i => zhMap[i.name] || i.name || '');
+            const containerData = containerStats.map(i => Number(i.value || 0));
+
+            const visitDatesRaw = recentVisits.map(v => {
+                if (!v.ata) return '';
+                return String(v.ata).slice(0,10);
+            }).filter(Boolean);
+
             const visitCountByDate = {};
-            visitDatesRaw.forEach(function(d){ if(!d) return; visitCountByDate[d] = (visitCountByDate[d] || 0) + 1; });
+            visitDatesRaw.forEach(function(d){ visitCountByDate[d] = (visitCountByDate[d] || 0) + 1; });
             const visitDates = Object.keys(visitCountByDate).sort();
             const visitCounts = visitDates.map(d => visitCountByDate[d]);
 
-            // utility colors
             const palette = ['#60a5fa','#34d399','#f97316','#f43f5e','#a78bfa','#f59e0b','#06b6d4','#ef4444'];
 
-            // Create Pie chart
+            // 图表初始化逻辑保留：如果需要可打开 canvas 并渲染
             try {
-                const pieCtx = document.getElementById('chart-pie').getContext('2d');
-                new Chart(pieCtx, {
-                    type: 'pie',
-                    data: {
-                        labels: taskLabels.length ? taskLabels : ['无数据'],
-                        datasets: [{
-                            data: taskData.length ? taskData : [1],
-                            backgroundColor: palette
-                        }]
-                    },
-                    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-                });
+                const pieEl = document.getElementById('chart-pie');
+                if (pieEl) {
+                    const pieCtx = pieEl.getContext('2d');
+                    new Chart(pieCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: taskLabels.length ? taskLabels : ['无数据'],
+                            datasets: [{
+                                data: taskData.length ? taskData : [1],
+                                backgroundColor: palette
+                            }]
+                        },
+                        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+                    });
+                }
             } catch(e){ console.warn('pie chart init failed', e); }
 
-            // Create Bar chart
             try {
-                const barCtx = document.getElementById('chart-bar').getContext('2d');
-                new Chart(barCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: containerLabels.length ? containerLabels : ['无数据'],
-                        datasets: [{
-                            label: '数量',
-                            data: containerData.length ? containerData : [0],
-                            backgroundColor: palette.slice(0, containerLabels.length || 1)
-                        }]
-                    },
-                    options: { responsive: true, scales: { y: { beginAtZero:true } }, plugins: { legend: { display: false } } }
-                });
+                const barEl = document.getElementById('chart-bar');
+                if (barEl) {
+                    const barCtx = barEl.getContext('2d');
+                    new Chart(barCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: containerLabels.length ? containerLabels : ['无数据'],
+                            datasets: [{
+                                label: '数量',
+                                data: containerData.length ? containerData : [0],
+                                backgroundColor: palette.slice(0, containerLabels.length || 1)
+                            }]
+                        },
+                        options: { responsive: true, scales: { y: { beginAtZero:true } }, plugins: { legend: { display: false } } }
+                    });
+                }
             } catch(e){ console.warn('bar chart init failed', e); }
 
-            // Create Line chart
             try {
-                const lineCtx = document.getElementById('chart-line').getContext('2d');
-                new Chart(lineCtx, {
-                    type: 'line',
-                    data: {
-                        labels: visitDates.length ? visitDates : ['无数据'],
-                        datasets: [{
-                            label: '访问次数',
-                            data: visitCounts.length ? visitCounts : [0],
-                            borderColor: '#1976D2',
-                            backgroundColor: 'rgba(33,118,210,0.12)',
-                            fill: true,
-                            tension: 0.3,
-                        }]
-                    },
-                    options: { responsive: true, scales: { y: { beginAtZero:true } }, plugins: { legend: { display: false } } }
-                });
+                const lineEl = document.getElementById('chart-line');
+                if (lineEl) {
+                    const lineCtx = lineEl.getContext('2d');
+                    new Chart(lineCtx, {
+                        type: 'line',
+                        data: {
+                            labels: visitDates.length ? visitDates : ['无数据'],
+                            datasets: [{
+                                label: '访问次数',
+                                data: visitCounts.length ? visitCounts : [0],
+                                borderColor: '#1976D2',
+                                backgroundColor: 'rgba(33,118,210,0.12)',
+                                fill: true,
+                                tension: 0.3,
+                            }]
+                        },
+                        options: { responsive: true, scales: { y: { beginAtZero:true } }, plugins: { legend: { display: false } } }
+                    });
+                }
             } catch(e){ console.warn('line chart init failed', e); }
         })();
     </script>

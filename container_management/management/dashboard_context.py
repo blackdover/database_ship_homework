@@ -53,6 +53,16 @@ def dashboard_stats(request):
         .order_by('-ata')[:6]
         .values('vessel_id__vessel_name', 'port_id__port_name', 'ata', 'status')
     )
+    # 最近任务（用于前端动画演示）——取最近5条任务的简要信息
+    recent_tasks_qs = list(
+        Task.objects.select_related('container_master_id')
+        .order_by('-task_id')[:5]
+        .values('task_id', 'task_type', 'status', 'container_master_id__container_number', 'from_slot_id', 'to_slot_id')
+    )
+    try:
+        recent_tasks_json = json.dumps(recent_tasks_qs, default=str)
+    except Exception:
+        recent_tasks_json = '[]'
 
     # --------- 新增：从数据库视图抓取样本数据（每个视图 5 行示例） ---------
     def fetch_view_sample(view_name, columns, limit=5):
@@ -135,6 +145,9 @@ def dashboard_stats(request):
         'recent_visits': recent_visits,
         # 新增：各数据库视图的样本数据，用于仪表盘渲染
         'db_view_samples': db_view_samples,
+        # 最近任务（结构化 + JSON 字符串供前端使用）
+        'recent_tasks': recent_tasks_qs,
+        'recent_tasks_json': recent_tasks_json,
     }
 
 
