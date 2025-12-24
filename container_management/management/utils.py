@@ -104,6 +104,14 @@ def get_user_role(user_id, django_user=None):
     if not user_id:
         return 'guest'
     
+    # 优先核查数据库中是否直接分配了权限 ID = 9（视作 viewer）
+    try:
+        if UserPermissions.objects.filter(user_id_id=user_id, permission_id_id=9).exists():
+            return 'viewer'
+    except Exception:
+        # 查询失败则继续按名称判断
+        pass
+
     permissions = get_user_permission_names(user_id)
     
     # Normalize permission names to uppercase for robust matching

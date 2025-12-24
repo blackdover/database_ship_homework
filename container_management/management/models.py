@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 
 # 堆场区类型枚举（用于模型字段 choices）
 BLOCK_TYPE_CHOICES = [
@@ -164,7 +165,18 @@ class VesselMaster(models.Model):
 # 集装箱主数据
 class ContainerMaster(models.Model):
     container_master_id = models.AutoField(primary_key=True, db_column="Container_Master_ID")
-    container_number = models.CharField(max_length=11, unique=True, db_column="Container_Number", verbose_name="箱号")
+    # 应用层正则校验：4 个大写字母后跟 7 位数字（与数据库 CHECK 约束保持一致）
+    container_number_validator = RegexValidator(
+        regex=r'^[A-Z]{4}[0-9]{7}$',
+        message='箱号格式必须为 4 个大写字母后跟 7 位数字，例如 ABCD1234567'
+    )
+    container_number = models.CharField(
+        max_length=11,
+        unique=True,
+        db_column="Container_Number",
+        verbose_name="箱号",
+        validators=[container_number_validator],
+    )
     owner_party_id = models.ForeignKey(Party, on_delete=models.SET_NULL, null=True, blank=True, db_column="Owner_Party_ID", verbose_name="箱主")
     type_code = models.ForeignKey(ContainerTypeDict, on_delete=models.PROTECT, db_column="Type_Code", verbose_name="类型代码")
     current_status = models.CharField(
@@ -280,10 +292,6 @@ class VesselVisit(models.Model):
         return f"{self.vessel_id.vessel_name} - {self.voyage_number_in}"
 
     def clean(self):
-        """
-        Ensure that if a berth is set, it belongs to the same port as port_id.
-        Prevent inconsistent data like port = Guangzhou but berth belongs to Yangshan.
-        """
         if self.berth_id and self.port_id:
             # berth_id is a Berth instance; its port FK field is `port_id`
             if getattr(self.berth_id, "port_id_id", None) is not None:
@@ -319,6 +327,16 @@ class Booking(models.Model):
 
     def __str__(self):
         return self.booking_number
+    
+    def clean(self):
+        # 确认订舱时必须关联航次
+        if self.status == 'Confirmed' and not self.voyage_id:
+            raise ValidationError({"status": "订舱单确认时必须关联付费方及航次！"})
+
+    def save(self, *args, **kwargs):
+        # 在程序化保存时也运行验证，避免绕过表单校验直接写入数据库导致触发器报错
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 # 任务表
